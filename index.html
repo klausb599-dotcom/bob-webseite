@@ -1,34 +1,247 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-<title>Bob</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOB</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
 <style>
-body {
-  background: #111;
-  color: white;
-  font-family: Arial;
-  text-align: center;
-  padding: 50px;
-}
-h1 {
-  font-size: 60px;
-}
-button {
-  padding: 15px 30px;
-  font-size: 18px;
-  border-radius: 10px;
-}
+  :root {
+    --bg: #0a0a0e;
+    --bg-2: #131318;
+    --red: #e6162f;
+    --red-dark: #8c0f20;
+    --red-glow: #ff3b52;
+    --yellow: #ffcf3f;
+    --ink: #050506;
+    --text: #f2f2f4;
+    --muted: #9a9aa4;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    background: var(--bg);
+    overflow-x: hidden;
+  }
+
+  body {
+    color: var(--text);
+    font-family: 'Inter', Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 32px 20px;
+    position: relative;
+  }
+
+  /* --- Hintergrund-Effekte --- */
+
+  .bg-fx {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .bg-fx::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    background:
+      radial-gradient(circle at 25% 30%, rgba(230, 22, 47, 0.28), transparent 45%),
+      radial-gradient(circle at 80% 70%, rgba(230, 22, 47, 0.18), transparent 50%);
+    filter: blur(10px);
+    animation: drift 14s ease-in-out infinite alternate;
+  }
+
+  .bg-fx::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1.2px);
+    background-size: 14px 14px;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+  }
+
+  @keyframes drift {
+    from { transform: translate(-2%, -1%) scale(1); }
+    to   { transform: translate(2%, 2%) scale(1.06); }
+  }
+
+  /* --- Hero --- */
+
+  .hero {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 560px;
+    width: 100%;
+  }
+
+  .title {
+    font-family: 'Bangers', 'Inter', sans-serif;
+    font-weight: 400;
+    letter-spacing: 4px;
+    font-size: clamp(72px, 22vw, 160px);
+    line-height: 0.9;
+    margin: 0 0 8px;
+    color: var(--red);
+    -webkit-text-stroke: 3px var(--ink);
+    text-shadow:
+      4px 4px 0 var(--ink),
+      0 0 30px rgba(230, 22, 47, 0.55),
+      0 0 70px rgba(230, 22, 47, 0.25);
+    transform: rotate(-2deg);
+    animation: settle 0.7s cubic-bezier(.2,.9,.3,1.2) both;
+  }
+
+  @keyframes settle {
+    0%   { opacity: 0; transform: rotate(-2deg) translateY(-24px) scale(0.9); }
+    100% { opacity: 1; transform: rotate(-2deg) translateY(0) scale(1); }
+  }
+
+  .subtitle {
+    font-size: clamp(16px, 4vw, 20px);
+    color: var(--muted);
+    margin: 0 0 36px;
+  }
+
+  /* --- Button --- */
+
+  .btn {
+    position: relative;
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--text);
+    background: linear-gradient(180deg, var(--red) 0%, var(--red-dark) 100%);
+    border: 3px solid var(--ink);
+    padding: 16px 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    transform: skewX(-6deg);
+    box-shadow: 6px 6px 0 var(--ink);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+
+  .btn span { display: inline-block; transform: skewX(6deg); }
+
+  .btn:active {
+    transform: skewX(-6deg) translate(4px, 4px);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  .btn:focus-visible {
+    outline: 3px solid var(--yellow);
+    outline-offset: 4px;
+  }
+
+  /* --- Comic-Burst beim Klick --- */
+
+  .burst-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .burst-layer.show {
+    opacity: 1;
+    pointer-events: auto;
+    animation: fadeout 1.4s ease forwards;
+  }
+
+  .burst {
+    position: relative;
+    width: min(70vw, 320px);
+    aspect-ratio: 1;
+    background: var(--yellow);
+    clip-path: polygon(
+      50% 0%, 61% 22%, 84% 10%, 78% 34%, 100% 38%,
+      82% 54%, 96% 74%, 72% 70%, 68% 94%, 50% 76%,
+      32% 94%, 28% 70%, 4% 74%, 18% 54%, 0% 38%,
+      22% 34%, 16% 10%, 39% 22%
+    );
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 0 4px var(--ink);
+    animation: pop 0.35s cubic-bezier(.2,.9,.3,1.4) both;
+  }
+
+  .burst span {
+    font-family: 'Bangers', sans-serif;
+    font-size: clamp(28px, 8vw, 46px);
+    color: var(--ink);
+    letter-spacing: 1px;
+    transform: rotate(-6deg);
+  }
+
+  @keyframes pop {
+    0%   { transform: scale(0) rotate(-25deg); }
+    70%  { transform: scale(1.1) rotate(4deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  @keyframes fadeout {
+    0%, 60% { opacity: 1; }
+    100%    { opacity: 0; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .title, .burst, .bg-fx::before { animation: none; }
+  }
 </style>
 </head>
 
 <body>
 
-<h1>BOB</h1>
-<p>Willkommen auf meiner Webseite 🚀</p>
+  <div class="bg-fx" aria-hidden="true"></div>
 
-<button onclick="alert('Yo! 😎')">
-Klick mich
-</button>
+  <main class="hero">
+    <h1 class="title">BOB</h1>
+    <p class="subtitle">Willkommen auf meiner Webseite 🚀</p>
+    <button class="btn" id="clickBtn"><span>Klick mich</span></button>
+  </main>
+
+  <div class="burst-layer" id="burstLayer" aria-live="polite">
+    <div class="burst">
+      <span>Yo! 😎</span>
+    </div>
+  </div>
+
+  <script>
+    const btn = document.getElementById('clickBtn');
+    const burstLayer = document.getElementById('burstLayer');
+    let hideTimer;
+
+    btn.addEventListener('click', () => {
+      clearTimeout(hideTimer);
+      burstLayer.classList.remove('show');
+      // Reflow erzwingen, damit die Animation bei mehrfachem Klick neu startet
+      void burstLayer.offsetWidth;
+      burstLayer.classList.add('show');
+
+      hideTimer = setTimeout(() => {
+        burstLayer.classList.remove('show');
+      }, 1400);
+    });
+  </script>
 
 </body>
 </html>
